@@ -3,6 +3,7 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import Navbar from './Components/Navbar';
 import Home from './Pages/Home';
 import Schedules from './Pages/Schedules';
+import Testes from './Pages/Testes';
 
 const routes = [
   {
@@ -14,6 +15,11 @@ const routes = [
     component: Schedules,
     name: 'Schedules',
     path: '/Schedules',
+  },
+  {
+    component: Testes,
+    name: 'Testes',
+    path: '/Testes',
   },
 ];
 
