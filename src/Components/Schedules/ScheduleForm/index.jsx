@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Formik, Field,
 } from 'formik';
 import {
-  Form, Col, Button, Dropdown,
+  Form, Col, Button,
 } from 'react-bootstrap';
-import DatePicker from 'react-datepicker';
+import DatePicker, { registerLocale, setDefaultLocale } from 'react-datepicker';
+import pt from 'date-fns/locale/pt';
 import Page from '../../Page';
 
-const scheduleForm = () => {
-  const [selectedBirthday, setSelectedBirthday] = useState();
-  const [scheduleDay, setScheduleDay] = useState();
+registerLocale('pt', pt);
+setDefaultLocale('pt');
 
-  return (
+const scheduleForm = () => (
 
-    <Formik
-      initialValues={
+  <Formik
+    initialValues={
         {
           patientName: '',
           patientBirthday: '',
@@ -23,87 +23,85 @@ const scheduleForm = () => {
           scheduleHour: '',
         }
         }
-      onSubmit={(data, { setSubmitting }) => { // Colocar um resetForm
-        console.log(data);
-        console.log(`Data de nascimento: ${selectedBirthday}`);
-        console.log(`Data do agendamento: ${scheduleDay}`);
-        setSubmitting(false);
-      }}
-    >
+    onSubmit={(data, { setSubmitting }) => { // Colocar um resetForm
+      console.log(data);
 
-      {({
-        values, handleSubmit, handleChange, isSubmitting,
-      }) => (
-        <Page title="Agendamento " mainTitle="Agente sua Vacinação!">
+      setSubmitting(false);
+    }}
+  >
 
-          <Form onSubmit={handleSubmit}>
-            <Form.Group controlId="formGroupName">
-              <Form.Row>
-                <Col xs={6}>
-                  <Form.Label>Nome Completo</Form.Label>
-                  <Field value={values.patientName} name="patientName" onChange={handleChange} placeholder="Seu nome aqui" as={Form.Control} />
+    {({
+      values, handleSubmit, handleChange, isSubmitting, setFieldValue,
+    }) => (
+      <Page title="Agendamento " mainTitle="Agente sua Vacinação!">
 
-                </Col>
+        <Form onSubmit={handleSubmit}>
+          <Form.Group controlId="formGroupName">
+            <Form.Row>
+              <Col xs={6}>
+                <Form.Label>Nome Completo</Form.Label>
+                <Field value={values.patientName} name="patientName" onChange={handleChange} placeholder="Seu nome aqui" as={Form.Control} />
 
-              </Form.Row>
-            </Form.Group>
-            <Form.Group controlId="formGroupDate">
-              <Form.Row>
-                <Col xs={3}>
-                  <Form.Label>Data de Nascimento</Form.Label>
+              </Col>
 
-                  <DatePicker
-                    selected={selectedBirthday}
-                    onChange={(date) => setSelectedBirthday(date)}
-                    dateFormat="dd/MM/yyyy"
-                    showYearDropdown
-                    showMonthDropdown
-                  />
+            </Form.Row>
+          </Form.Group>
+          <Form.Group controlId="formGroupBirthday">
+            <Form.Row>
+              <Col xs={3}>
+                <Form.Label>Data de Nascimento</Form.Label>
 
-                </Col>
-              </Form.Row>
-            </Form.Group>
-            <br />
-
-            <Form.Group controlId="paraAgendar">
-              <Form.Label>Dias e Horários disponíveis:</Form.Label>
-              <Form.Row>
                 <DatePicker
-                  selected={scheduleDay}
-                  onChange={(date) => setScheduleDay(date)}
-                  dateFormat="dd/MM/yyyy"
+                  selected={values.patientBirthday}
+                  onChange={(date) => setFieldValue('patientBirthday', date)}
                   showYearDropdown
                   showMonthDropdown
+                  dropdownMode="select"
+                  maxDate={new Date()}
+                  placeholderText="Sua data de nascimento"
                 />
 
-                <Dropdown className="ml-2">
-                  <Dropdown.Toggle variant="outline-primary"> Horários </Dropdown.Toggle>
-                  <Dropdown.Menu>
-                    <Dropdown.Item>8:30</Dropdown.Item>
-                    <Dropdown.Item>8:45</Dropdown.Item>
-                    <Dropdown.Item>9:00</Dropdown.Item>
-                    <Dropdown.Item>9:15</Dropdown.Item>
-                    <Dropdown.Item>9:30</Dropdown.Item>
-                    <Dropdown.Item>9:45</Dropdown.Item>
-                    <Dropdown.Item>10:00</Dropdown.Item>
-                    <Dropdown.Item>10:15</Dropdown.Item>
-                    <Dropdown.Item>10:30</Dropdown.Item>
-                    <Dropdown.Item>10:45</Dropdown.Item>
-                    <Dropdown.Item>11:00</Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
+              </Col>
+            </Form.Row>
+          </Form.Group>
+          <br />
 
-              </Form.Row>
-            </Form.Group>
-            <Button disabled={isSubmitting} type="submit"> Agendar! </Button>
-          </Form>
+          <Form.Group controlId="formGroupSchedule">
+            <Form.Label>Dias e Horários disponíveis:</Form.Label>
+            <Form.Row>
+              <DatePicker
+                selected={values.scheduleDay}
+                onChange={(date) => setFieldValue('scheduleDay', date)}
+                showYearDropdown
+                dropdownMode="select"
+                showMonthDropdown
+                minDate={new Date()}
+                placeholderText="Dias para agendar"
 
-        </Page>
+              />
+              <DatePicker
+                className="ml-2"
+                selected={values.scheduleHour}
+                onChange={(time) => setFieldValue('scheduleHour', time)}
+                showTimeSelect
+                showTimeSelectOnly
+                timeIntervals={15}
+                timeCaption="Time"
+                dateFormat="h:mm aa"
+                placeholderText="hora"
+                disabled={!values.scheduleDay}
+              />
 
-      )}
+            </Form.Row>
+          </Form.Group>
+          <Button disabled={isSubmitting} type="submit"> Agendar! </Button>
+        </Form>
 
-    </Formik>
-  );
-};
+      </Page>
+
+    )}
+
+  </Formik>
+);
 
 export default scheduleForm;
