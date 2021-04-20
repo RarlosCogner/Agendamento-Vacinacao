@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
+import SchedulesProvider from '../../Contexts/schedulesContext';
 import ScheduleTable from '../../Components/Schedules/ScheduleTable';
 
 export default function index() {
-  const [schedules, setSchedules] = useState([]);
-
   return (
-    <ScheduleTable schedules={schedules} setSchedules={setSchedules} />
+    <SchedulesProvider>
+      <div>
+        <ScheduleTable />
+
+      </div>
+    </SchedulesProvider>
+
   );
 }
