@@ -8,7 +8,7 @@ import {
 import DatePicker, { registerLocale, setDefaultLocale } from 'react-datepicker';
 import pt from 'date-fns/locale/pt';
 import { toast } from 'react-toastify';
-// import { useSchedule } from '../../../Contexts/schedulesContext';
+import yup from 'yup';
 import Page from '../../Page';
 import axios from '../../../Utils/api';
 
@@ -17,14 +17,13 @@ setDefaultLocale('pt');
 toast.configure();
 
 const scheduleForm = () => {
-  // const [schedules, setSchedules] = useSchedule();
-
   const initialValues = {
 
     patientName: '',
     patientBirthday: null,
     scheduleDay: null,
     scheduleHour: null,
+    _id: null,
 
   };
 
@@ -32,22 +31,35 @@ const scheduleForm = () => {
     event.preventDefault();
 
     try {
-      await axios.post('/schedule', {
+      await axios.post('/api/patient', {
         patientName: event.patientName,
         patientBirthday: event.patientBirthday,
         scheduleDay: event.scheduleDay,
         scheduleHour: event.scheduleHour,
+        _id: Date.now(),
 
       });
+
+      toast.info('Agendamento feito com sucesso!');
     } catch (error) {
       toast.error('Erro');
     }
   };
 
+  const validationSchema = yup.object({
+
+    patientName: yup.string().required('Campo Obrigatório!'),
+    patientBirthday: yup.date().required('Campo Obrigatório!'),
+    scheduleDay: yup.date().required('Campo Obrigatório!'),
+    scheduleHour: yup.date().required('Campo Obrigatório!'),
+
+  });
+
   return (
     <Formik
       initialValues={initialValues}
       onSubmit={handleSubmit}
+      validationSchema={validationSchema}
     >
 
       {({
